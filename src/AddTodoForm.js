@@ -4,7 +4,6 @@ const AddTodoForm = ({ onAddtodo }) => {
     const [todoTitle, setTodoTitle] = useState('')
     const [todoCategory, setTodoCategory] = useState([])
 
-
     //handeling checkbox event
     const handelCheckboxChange = (event) => {
         const { name, checked } = event.target
