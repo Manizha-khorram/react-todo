@@ -33,6 +33,19 @@ function App() {
         }
     }
 
+    const removeTodo = (id) => {
+        if (todoList) {
+            const filteredTodoList = todoList.filter((todo) => todo.id !== id)
+            setTodoList(filteredTodoList)
+        }
+        if (favoriteList) {
+            const filteredTodoList = favoriteList.filter(
+                (todo) => todo.id !== id
+            )
+            setFavoriteList(filteredTodoList)
+        }
+    }
+
     return (
         <>
             <header>
@@ -40,7 +53,11 @@ function App() {
             </header>
             <hr />
             <AddTodoForm onAddtodo={addTodo} />
-            <TodoList todoList={todoList} favoriteList={favoriteList} />
+            <TodoList
+                todoList={todoList}
+                favoriteList={favoriteList}
+                onRemoveTodo={removeTodo}
+            />
         </>
     )
 }

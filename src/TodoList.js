@@ -1,10 +1,7 @@
 import React from 'react'
 import TodoListItem from './TodoListItem'
 
-
-
-
-const TodoList = ({ todoList, favoriteList }) => {
+const TodoList = ({ todoList, favoriteList, onRemoveTodo }) => {
     return (
         <div>
             <div>
@@ -18,6 +15,7 @@ const TodoList = ({ todoList, favoriteList }) => {
                             key={todo.id}
                             todo={todo}
                             title={todo.title}
+                            onRemoveTodo={onRemoveTodo}
                         />
                     ))}
                 </ul>
@@ -33,6 +31,7 @@ const TodoList = ({ todoList, favoriteList }) => {
                             key={todo.id}
                             todo={todo}
                             title={todo.title}
+                            onRemoveTodo={onRemoveTodo}
                         />
                     ))}
                 </ul>

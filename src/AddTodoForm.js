@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import InputWithLable from './InputWIthLable'
 
 const AddTodoForm = ({ onAddtodo }) => {
     const [todoTitle, setTodoTitle] = useState('')
@@ -29,38 +30,14 @@ const AddTodoForm = ({ onAddtodo }) => {
     }
     return (
         <form onSubmit={handleAddTodo}>
-            <label htmlFor="todoTitle"></label>
-            <input
-                id="todoTitle"
-                placeholder="Enter todo title"
-                name="title"
-                value={todoTitle}
-                onChange={handelTitleChange}
-            />
-            <div>
-                <label htmlFor="mytodo">
-                    <input
-                        type="checkbox"
-                        id="mytodo"
-                        name="mytodo"
-                        checked={todoCategory.includes('mytodo')}
-                        onChange={handelCheckboxChange}
-                    />
-                    My Todo List
-                </label>
-            </div>
-            <div>
-                <label htmlFor="favorite">
-                    <input
-                        type="checkbox"
-                        id="favorite"
-                        name="favorite"
-                        checked={todoCategory.includes('favorite')}
-                        onChange={handelCheckboxChange}
-                    />
-                    My Favorite List
-                </label>
-            </div>
+            <InputWithLable
+                todoTitle={todoTitle}
+                handelTitleChange={handelTitleChange}
+                handelCheckboxChange={handelCheckboxChange}
+                todoCategory={todoCategory}
+            >
+                Title:{' '}
+            </InputWithLable>
             <button type="submit">Add</button>
         </form>
     )
