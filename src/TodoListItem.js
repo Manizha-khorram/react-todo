@@ -1,15 +1,9 @@
 import React from 'react'
 
-const TodoListItem = ({ todo, title }) => {
-    if (title) {
-        return (
-            <div>
-                <hr />
-                <strong>{title}</strong>
-                <hr />
-            </div>
-        )
-    }
+const TodoListItem = ({ todo }) => {
+
+    //we can use (title) prop here as well to deal with titles, no need for todo prop!?
+   
     return (
         <div>
             <li>{todo.title}</li>

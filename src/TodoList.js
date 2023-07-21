@@ -1,16 +1,19 @@
 import React from 'react'
 import TodoListItem from './TodoListItem'
 
+
+
+
 const TodoList = ({ todoList, favoriteList }) => {
     return (
         <div>
             <div>
                 <p>
-                    <strong>{todoList[0].title}</strong>
+                    <strong>My Todo List</strong>
                 </p>
                 <hr />
                 <ul>
-                    {todoList.slice(1).map((todo) => (
+                    {todoList.map((todo) => (
                         <TodoListItem
                             key={todo.id}
                             todo={todo}
@@ -21,7 +24,7 @@ const TodoList = ({ todoList, favoriteList }) => {
             </div>
             <div>
                 <p>
-                    <strong>My Favorite</strong>
+                    <strong>My Favorite List</strong>
                 </p>
                 <hr />
                 <ul>
