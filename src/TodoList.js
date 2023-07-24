@@ -1,7 +1,17 @@
 import React from 'react'
 import TodoListItem from './TodoListItem'
 
-const TodoList = ({ todoList, favoriteList, onRemoveTodo }) => {
+const TodoList = ({
+    todoList,
+    favoriteList,
+    onRemoveTodo,
+    onToggleFavorite,
+    searchTerm,
+}) => {
+    const filteredTodoList = todoList.filter((todo) =>
+        todo.title.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+
     return (
         <div>
             <div>
@@ -10,12 +20,13 @@ const TodoList = ({ todoList, favoriteList, onRemoveTodo }) => {
                 </p>
                 <hr />
                 <ul>
-                    {todoList.map((todo) => (
+                    {filteredTodoList.map((todo) => (
                         <TodoListItem
                             key={todo.id}
                             todo={todo}
                             title={todo.title}
                             onRemoveTodo={onRemoveTodo}
+                            onToggleFavorite={onToggleFavorite}
                         />
                     ))}
                 </ul>

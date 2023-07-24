@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import InputWithLable from './InputWIthLable'
 
-const AddTodoForm = ({ onAddtodo }) => {
+const AddTodoForm = ({ onAddtodo, onSearch }) => {
     const [todoTitle, setTodoTitle] = useState('')
     const [todoCategory, setTodoCategory] = useState([])
 
@@ -38,6 +38,7 @@ const AddTodoForm = ({ onAddtodo }) => {
             >
                 Title:{' '}
             </InputWithLable>
+
             <button type="submit">Add</button>
         </form>
     )
