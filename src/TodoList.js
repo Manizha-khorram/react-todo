@@ -8,9 +8,11 @@ const TodoList = ({
     onToggleFavorite,
     searchTerm,
 }) => {
+    console.log('searchTerm', `"${searchTerm}"`)
     const filteredTodoList = todoList.filter((todo) =>
         todo.title.toLowerCase().includes(searchTerm.toLowerCase())
     )
+    console.log('todoList', todoList, "filteredTodoList",filteredTodoList)
 
     return (
         <div>
@@ -27,6 +29,7 @@ const TodoList = ({
                             title={todo.title}
                             onRemoveTodo={onRemoveTodo}
                             onToggleFavorite={onToggleFavorite}
+                            isFavoriteList = {false}
                         />
                     ))}
                 </ul>
@@ -43,6 +46,8 @@ const TodoList = ({
                             todo={todo}
                             title={todo.title}
                             onRemoveTodo={onRemoveTodo}
+                            isFavoriteList = {true}
+
                         />
                     ))}
                 </ul>
