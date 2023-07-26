@@ -8,7 +8,7 @@ const SearchForm = ({ onSearch }) => {
     const handelSearchSubmit = (event) => {
         event.preventDefault()
         onSearch(searchQuery)
-        setSearchQuery(' ')
+        setSearchQuery('')
     }
 
     const handdleSearchChange = (event) => {

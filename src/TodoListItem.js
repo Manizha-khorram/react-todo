@@ -2,7 +2,6 @@ import React from 'react'
 import { AiOutlineStar, AiFillStar } from 'react-icons/ai'
 
 const TodoListItem = ({ todo, onRemoveTodo, onToggleFavorite }) => {
-
     const renderStarIcon = () => {
         return todo.isFavorite ? (
             <AiFillStar onClick={() => onToggleFavorite(todo.id)}></AiFillStar>

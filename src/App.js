@@ -3,29 +3,38 @@ import TodoList from './TodoList'
 import AddTodoForm from './AddTodoForm'
 import SearchForm from './SearchForm'
 
-const useSemiPersistentState = (key, intializedState) => {
-    //State variables for todo list and favorite list
-    const [value, setValue] = useState(() => {
-        const savedList = localStorage.getItem(key)
-        return JSON.parse(savedList) || intializedState
-    })
-
-    //useEffect
-    useEffect(() => {
-        localStorage.setItem(key, JSON.stringify(value))
-    }, [value, key])
-
-    return [value, setValue]
-}
-
 function App() {
-    const [todoList, setTodoList] = useSemiPersistentState('savedTodoList', [])
-    const [favoriteList, setFavoriteList] = useSemiPersistentState(
-        'savedFavoriteList',
-        []
-    )
+    const [todoList, setTodoList] = useState([])
+    let [isLoading, setIsLoading] = useState(true)
+    const [favoriteList, setFavoriteList] = useState(() => {
+        const savedFavoriteTodo = localStorage.getItem('savedFavoriteList')
+        return JSON.parse(savedFavoriteTodo) || []
+    })
     //function to search in todo list
-    const [searchTerm, setSearchTerm] = useSemiPersistentState('searchTerm', '')
+    const [searchTerm, setSearchTerm] = useState('')
+    useEffect(() => {
+        new Promise((resolve, reject) => {
+            setTimeout(() => {
+                const savedTodo = localStorage.getItem('savedTodoList')
+                const intiallValue = JSON.parse(savedTodo) || []
+                resolve({ data: { todoList: intiallValue } })
+            }, 2000)
+        })
+            .then((result) => {
+                setTodoList(result.data.todoList)
+                setIsLoading(false)
+                console.log('Loaded initial todoList:', result.data.todoList)
+            })
+            .catch((error) => {
+                console.log('The error is:', error)
+                setIsLoading(false)
+            })
+    }, [])
+    useEffect(() => {
+        if (!isLoading) {
+            localStorage.setItem('savedTodoList', JSON.stringify(todoList))
+        }
+    }, [todoList])
 
     //function to add new item to todo list based on its category
     const addTodo = (newTodo) => {
@@ -81,6 +90,7 @@ function App() {
             <SearchForm onSearch={searchTodo} />
             <br />
             <AddTodoForm onAddtodo={addTodo} />
+            {isLoading && <p>....isLoading</p>}
             <TodoList
                 todoList={todoList}
                 favoriteList={favoriteList}
