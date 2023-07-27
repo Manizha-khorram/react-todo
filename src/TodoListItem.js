@@ -1,9 +1,8 @@
 import React from 'react'
 import { AiOutlineStar, AiFillStar } from 'react-icons/ai'
 
+
 const TodoListItem = ({ todo, onRemoveTodo, onToggleFavorite, isFavoriteList}) => {
-
-
 
     const renderStarIcon = () => {
         return todo.isFavorite ? (
