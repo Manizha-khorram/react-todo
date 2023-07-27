@@ -1,10 +1,19 @@
 import React from 'react'
 import TodoListItem from './TodoListItem'
 
+const TodoList = ({
+    todoList,
+    favoriteList,
+    onRemoveTodo,
+    onToggleFavorite,
+    searchTerm,
+}) => {
+    console.log('searchTerm', `"${searchTerm}"`)
+    const filteredTodoList = todoList.filter((todo) =>
+        todo.title.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    console.log('todoList', todoList, "filteredTodoList",filteredTodoList)
 
-
-
-const TodoList = ({ todoList, favoriteList }) => {
     return (
         <div>
             <div>
@@ -13,11 +22,14 @@ const TodoList = ({ todoList, favoriteList }) => {
                 </p>
                 <hr />
                 <ul>
-                    {todoList.map((todo) => (
+                    {filteredTodoList.map((todo) => (
                         <TodoListItem
                             key={todo.id}
                             todo={todo}
                             title={todo.title}
+                            onRemoveTodo={onRemoveTodo}
+                            onToggleFavorite={onToggleFavorite}
+                            isFavoriteList = {false}
                         />
                     ))}
                 </ul>
@@ -33,6 +45,9 @@ const TodoList = ({ todoList, favoriteList }) => {
                             key={todo.id}
                             todo={todo}
                             title={todo.title}
+                            onRemoveTodo={onRemoveTodo}
+                            isFavoriteList = {true}
+
                         />
                     ))}
                 </ul>
