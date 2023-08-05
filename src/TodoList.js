@@ -9,6 +9,7 @@ const TodoList = ({
     searchTerm,
     isLoading,
 }) => {
+
     if (isLoading) {
         return <p>....isLoading</p>
     }
@@ -16,6 +17,7 @@ const TodoList = ({
     const filteredTodoList = todoList.filter((todo) =>
         todo.title.toLowerCase().includes(searchTerm.toLowerCase())
     )
+    console.log('todoList', todoList, "filteredTodoList",filteredTodoList)
 
     const [prioritize, setPrioritize] = useState(false)
 
@@ -43,10 +45,13 @@ const TodoList = ({
                             title={todo.title}
                             onRemoveTodo={onRemoveTodo}
                             onToggleFavorite={onToggleFavorite}
+                            isFavoriteList = {false}
                         />
                     ))}
                 </ul>
+
                 <button onClick={handelStarsOrder}> Prioritize</button>
+
             </div>
         </div>
     )
