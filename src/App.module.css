@@ -1,0 +1,70 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-image: url('/images/hello.svg');
+    font-family: cursive;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    margin: -102px 96px 400px 101px;
+    align-items: center;
+    justify-content: center;
+}
+.menu-elements {
+    height: 30em;
+    width: 10em;
+    background-color: #c48c70;
+    opacity: 0.5;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 20px;
+}
+
+.add-list {
+    flex-grow: 0;
+    margin: 380px 20px 10px 20px;
+    white-space: nowrap;
+}
+.background-element {
+    height: 37em;
+    width: 39em;
+
+    background-image: url('/images/Chalk-on-Board.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+
+    margin: 20px;
+    padding: 185px 0px 55px 66px;
+}
+
+.model-container {
+    position: fixed;
+    top: 150px;
+    left: 365px;
+    width: 20em;
+    height: 10em;
+    background-color: rgb(241 243 244 / 60%);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.model-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(168, 63, 63, 0.2);
+    padding: 15px;
+}
+
+.active-list {
+    background-color: #803c0f;
+    color: white;
+    font-weight: bold;
+}

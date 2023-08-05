@@ -2,14 +2,20 @@ import React, { useState, useEffect } from 'react'
 import TodoList from './TodoList'
 import AddTodoForm from './AddTodoForm'
 import SearchForm from './SearchForm'
+import styles from './App.module.css'
+import NavBar from './NavBar.js'
+import NewCustomList from './NewCustomList'
 
 function App() {
-    const [todoList, setTodoList] = useState([])
-    let [isLoading, setIsLoading] = useState(true)
-    const [favoriteList, setFavoriteList] = useState(() => {
-        const savedFavoriteTodo = localStorage.getItem('savedFavoriteList')
-        return JSON.parse(savedFavoriteTodo) || []
-    })
+    const [todoList, setTodoList] = useState([
+        { title: 'MyTodoList', todos: [] },
+    ])
+    const [isLoading, setIsLoading] = useState(true)
+    const [isListVisible, setIsListVisible] = useState(0)
+
+    const [isFormVisible, setIsFormVisible] = useState(false)
+    const [newListTitle, setNewListTitle] = useState('')
+
     //function to search in todo list
     const [searchTerm, setSearchTerm] = useState('')
     useEffect(() => {
@@ -38,12 +44,11 @@ function App() {
 
     //function to add new item to todo list based on its category
     const addTodo = (newTodo) => {
-        if (newTodo.category === 'mytodo') {
-            setTodoList((prevTodoList) => [...prevTodoList, newTodo])
-            setSearchTerm('')
-        } else if (newTodo.category === 'favorite') {
-            setFavoriteList((prevFavoritList) => [...prevFavoritList, newTodo])
-        }
+        setTodoList((prevtodoLost) => {
+            const updatedLists = [...prevtodoLost]
+            updatedLists[isListVisible].todos.push(newTodo)
+            return updatedLists
+        })
     }
 
     const searchTodo = (searchTerm) => {
@@ -51,53 +56,108 @@ function App() {
     }
 
     const removeTodo = (id) => {
-        if (todoList) {
-            const filteredTodoList = todoList.filter((todo) => todo.id !== id)
-            setTodoList(filteredTodoList)
-        }
-        if (favoriteList) {
-            const filteredTodoList = favoriteList.filter(
-                (todo) => todo.id !== id
-            )
-            setFavoriteList(filteredTodoList)
-        }
+        setTodoList((prevTodoList) => {
+            const updatedLists = prevTodoList.map((list) => {
+                return {
+                    ...list,
+                    todos: list.todos.filter((todo) => todo.id !== id),
+                }
+            })
+            return updatedLists
+        })
     }
 
     const toggleFavorite = (id) => {
-        const updatedTodos = todoList.map((todo) => {
-            if (todo.id === id) {
-                //For example, if a todo has isFavorite: true, calling toggleFavorite with its id will update it to isFavorite: false, and vice versa.
-
-                return { ...todo, isFavorite: !todo.isFavorite }
+        const updatedTodos = todoList.map((list) => {
+            return {
+                ...list,
+                todos: list.todos.map((todo) => {
+                    if (todo.id === id) {
+                        return { ...todo, isFavorite: !todo.isFavorite }
+                    }
+                    return todo
+                }),
             }
-            return todo
         })
 
-        const updatedFavoriteList = updatedTodos.filter(
-            (todo) => todo.isFavorite
-        )
-
         setTodoList(updatedTodos)
-        setFavoriteList(updatedFavoriteList)
+    }
+
+    const addNewList = (title) => {
+        setTodoList([...todoList, { title, todos: [] }])
+        setNewListTitle('')
+        setIsFormVisible(false)
+    }
+
+    const closeAddModel = (event) => {
+        setIsFormVisible(false)
     }
 
     return (
         <>
-            <header>
-                <h1>Todo List</h1>
-            </header>
-            <hr />
-            <SearchForm onSearch={searchTodo} />
-            <br />
-            <AddTodoForm onAddtodo={addTodo} />
-            {isLoading && <p>....isLoading</p>}
-            <TodoList
-                todoList={todoList}
-                favoriteList={favoriteList}
-                onRemoveTodo={removeTodo}
-                onToggleFavorite={toggleFavorite}
-                searchTerm={searchTerm}
-            />
+            <NavBar></NavBar>
+
+            <div className={styles['container']}>
+                <div className={styles['menu-elements']}>
+                    <SearchForm onSearch={searchTodo} />
+                    {todoList.map((list, index) => (
+                        <button
+                            key={index}
+                            onClick={() => setIsListVisible(index)}
+                            className={
+                                index === isListVisible
+                                    ? styles['active-list']
+                                    : ''
+                            }
+                        >
+                            {list.title}
+                        </button>
+                    ))}
+                    <button
+                        className={styles['add-list']}
+                        onClick={() => setIsFormVisible(true)}
+                    >
+                        AddList
+                    </button>
+                </div>
+                <div
+                    className={styles[`model-container`]}
+                    style={{ display: isFormVisible ? 'flex' : 'none' }}
+                >
+                    {isFormVisible && (
+                        <NewCustomList
+                            className={styles[`model-card`]}
+                            onSubmit={(title) => {
+                                addNewList(title)
+                                setIsFormVisible(false)
+                            }}
+                            title={newListTitle}
+                            setTitle={setNewListTitle}
+                            onClose={closeAddModel}
+                        />
+                    )}
+                </div>
+                <div className={styles['background-element']}>
+                    <br />
+                    <AddTodoForm onAddtodo={addTodo} />
+                    {/* {isLoading && <p>....isLoading</p>} */}
+
+                    {isListVisible >= 0 && (
+                        <TodoList
+                            className={styles.TodoList}
+                            todoList={
+                                todoList[isListVisible]
+                                    ? todoList[isListVisible].todos
+                                    : []
+                            }
+                            onRemoveTodo={removeTodo}
+                            onToggleFavorite={toggleFavorite}
+                            searchTerm={searchTerm}
+                            isLoading={isLoading}
+                        />
+                    )}
+                </div>
+            </div>
         </>
     )
 }
