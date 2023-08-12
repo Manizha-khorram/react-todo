@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 const NewCustomList = ({ onSubmit, onClose, title, setTitle }) => {
     const handelAddList = (event) => {
