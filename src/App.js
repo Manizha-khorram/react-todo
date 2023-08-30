@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import TodoList from './TodoList'
-import AddTodoForm from './AddTodoForm'
-import SearchForm from './SearchForm'
+import TodoList from './TodoList/TodoList'
+import AddTodoForm from './AddTodoForm/AddTodoForm'
+import SearchForm from './SearchForm/SearchForm'
 import styles from './App.module.css'
-import NavBar from './NavBar.js'
-import NewCustomList from './NewCustomList'
+import NavBar from './NavBar/NavBar.js'
+import NewCustomList from './NewCustomList/NewCustomList'
 import {BrowserRouter, Routes, Route, Link} from 'react-router-dom'
+
 
 function App() {
     const [todoList, setTodoList] = useState([])
@@ -16,6 +17,10 @@ function App() {
     const [newListTitle, setNewListTitle] = useState('')
 
     const [searchTerm, setSearchTerm] = useState('')
+    const [activeListIndex, setActiveListIndex] = useState(null); 
+    const [animate, setAnimate] = useState(false)
+    const [Descriptions, setDescriptions] = useState(Array(todoList.length).fill(''))
+
 
     const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}`
     const listUrl = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME_LIST}`
@@ -43,6 +48,8 @@ function App() {
 
             const todoData = await todoResponse.json()
             const listData = await listResponse.json()
+            console.log('todoData', todoData)
+            console.log('lists', listData)
             const todos = todoData.records.map((todo) => {
                 const newTodo = {
                     id: todo.id,
@@ -58,16 +65,14 @@ function App() {
                 return {
                     
                     id: list.id,
-                    title: list.fields.ListName
+                    title: list.fields.ListName,
+                    Descriptions: list.fields.Descriptions,
+                    todos: todos.filter((todo) => todo.listId === list.id),
                 }
             })
-            const initialLists = lists.map((listProp) => ({
-                ...listProp,
-                todos: todos.filter((todo) => todo.listId === listProp.id),
-
-            }));
-    
-            setTodoList([...initialLists, ...todoList]);
+           console.log('listsss', lists)
+            setTodoList([...lists, ...todoList]);
+            setDescriptions(Array(todoList.length).fill(''))
             setIsLoading(false)
         } catch (err) {
             console.error(err.message)
@@ -89,7 +94,7 @@ function App() {
                 {
                     fields: {
                         Title: newTodo.title,
-                        completedAt: completedDateISO,
+                        completedAt: completedDateISO,    
                         ListId: listVisible.id
                         
                     },
@@ -181,6 +186,7 @@ function App() {
                 {
                     fields: {
                         ListName: title,
+                        Descriptions:''
                     },
                 },
             ],
@@ -228,13 +234,25 @@ function App() {
          <NavBar />
         <Routes>
             <Route path='/'    element={
+                <>
+               
             <div className={styles['container']}>
+               
+                <div className={styles['background-element']}>
+                <div  className={styles['first-child']}>
+                <AddTodoForm onAddtodo={addTodo} />
+                </div>
+                <div className={styles['second-child']}>
                 <div className={styles['menu-elements']}>
                     <SearchForm onSearch={searchTodo} />
                     {todoList.map((list, index) => (
                         <button
                             key={index}
-                            onClick={() => setIsListVisible(index)}
+                            onClick={() => {   console.log('Clicked button with index:', index);
+                            console.log('List ID:', list.id);
+                            const listIndex = todoList.findIndex((item) => item.id === list.id);
+                            console.log('Computed list index:', listIndex);
+                             setIsListVisible(listIndex); setActiveListIndex(index); setAnimate(true)}}
                             className={
                                 index === isListVisible
                                     ? styles['active-list']
@@ -246,7 +264,7 @@ function App() {
                     ))}
                     <button
                         className={styles['add-list']}
-                        onClick={() => setIsFormVisible(true)}
+                        onClick={() => setIsFormVisible(true) }
                     >
                         AddList
                     </button>
@@ -268,28 +286,41 @@ function App() {
                         />
                     )}
                 </div>
-                <div className={styles['background-element']}>
-                    <br />
-                    <AddTodoForm onAddtodo={addTodo} />
-                    {/* {isLoading && <p>....isLoading</p>} */}
-
-                    {isListVisible >= 0 && (
+                
+                <div>
+                  
+                    
+                  
                         <TodoList
                             className={styles.TodoList}
                             todoList={
-                                todoList[isListVisible]
+                                isListVisible >= 0  && todoList.length > 0
                                     ? todoList[isListVisible].todos
                                     : []
                             }
+                            
                             onRemoveTodo={removeTodo}
                             onToggleFavorite={toggleFavorite}
                             searchTerm={searchTerm}
                             isLoading={isLoading}
+                            activeListIndex={activeListIndex}
+                            animate={animate}
+                            setAnimate={setAnimate}
+                            isListVisible={isListVisible}
+                            Descriptions={Descriptions}
+                            setDescriptions={setDescriptions}  
+                            listId={
+                                isListVisible >= 0  && todoList.length > 0 ?
+                                todoList[isListVisible].id : undefined}
                         />
-                    )}
+                 
                     <Link to="/new" className={styles['break']}>let's take a break</Link>
                 </div>
+                </div>
+                </div>
             </div>
+            <footer style={{ height: '20%', backgroundColor:'red'}}></footer>
+            </>
             }/>
             <Route  path='/new' element={<h1 style={{color: 'red'}}> Hi...</h1>}/>
         </Routes>
