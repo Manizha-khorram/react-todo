@@ -1,17 +1,12 @@
 import React, { useEffect, useRef } from 'react'
+import styles from './InputWIthLable.module.css'
 
-const InputWithLable = ({
-    todoTitle,
-    handelTitleChange,
-    handelCheckboxChange,
-    todoCategory,
-    children,
-}) => {
+const InputWithLable = ({ todoTitle, handelTitleChange, children }) => {
     const inputRef = useRef()
 
     useEffect(() => {
         inputRef.current.focus()
-    })
+    }, [])
 
     return (
         <>
@@ -23,31 +18,8 @@ const InputWithLable = ({
                 value={todoTitle}
                 onChange={handelTitleChange}
                 ref={inputRef}
+                className={styles['todoInput']}
             />
-            <div>
-                <label htmlFor="mytodo">
-                    <input
-                        type="checkbox"
-                        id="mytodo"
-                        name="mytodo"
-                        checked={todoCategory.includes('mytodo')}
-                        onChange={handelCheckboxChange}
-                    />
-                    My Todo List
-                </label>
-            </div>
-            <div>
-                <label htmlFor="favorite">
-                    <input
-                        type="checkbox"
-                        id="favorite"
-                        name="favorite"
-                        checked={todoCategory.includes('favorite')}
-                        onChange={handelCheckboxChange}
-                    />
-                    My Favorite List
-                </label>
-            </div>
         </>
     )
 }
