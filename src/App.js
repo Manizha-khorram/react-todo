@@ -5,6 +5,7 @@ import SearchForm from './SearchForm'
 import styles from './App.module.css'
 import NavBar from './NavBar.js'
 import NewCustomList from './NewCustomList'
+import {BrowserRouter, Routes, Route, Link} from 'react-router-dom'
 
 function App() {
     const [todoList, setTodoList] = useState([])
@@ -221,9 +222,12 @@ function App() {
     }
 
     return (
-        <>
-            <NavBar></NavBar>
+        
 
+        <BrowserRouter>
+         <NavBar />
+        <Routes>
+            <Route path='/'    element={
             <div className={styles['container']}>
                 <div className={styles['menu-elements']}>
                     <SearchForm onSearch={searchTodo} />
@@ -283,9 +287,14 @@ function App() {
                             isLoading={isLoading}
                         />
                     )}
+                    <Link to="/new" className={styles['break']}>let's take a break</Link>
                 </div>
             </div>
-        </>
+            }/>
+            <Route  path='/new' element={<h1 style={{color: 'red'}}> Hi...</h1>}/>
+        </Routes>
+            </BrowserRouter>
+    
     )
 }
 

@@ -8,7 +8,7 @@ body {
 .container {
     display: flex;
     flex-direction: row;
-    margin: -102px 96px 400px 101px;
+    margin: 13px 96px 400px 101px;
     align-items: center;
     justify-content: center;
 }
@@ -30,7 +30,7 @@ body {
     white-space: nowrap;
 }
 .background-element {
-    height: 37em;
+    height: 31em;
     width: 39em;
 
     background-image: url('/images/Chalk-on-Board.jpg');
@@ -39,7 +39,7 @@ body {
     background-size: contain;
 
     margin: 20px;
-    padding: 185px 0px 55px 66px;
+    padding: 104px 0px 55px 66px;
 }
 
 .model-container {
@@ -67,4 +67,13 @@ body {
     background-color: #803c0f;
     color: white;
     font-weight: bold;
+}
+
+
+.break {
+
+    color: white;
+    
+
+
 }
