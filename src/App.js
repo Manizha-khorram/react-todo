@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react'
-import TodoList from './TodoList/TodoList'
-import AddTodoForm from './AddTodoForm/AddTodoForm'
-import SearchForm from './SearchForm/SearchForm'
+import TodoList from './components/TodoList/TodoList'
+import AddTodoForm from './components/AddTodoForm/AddTodoForm'
+import SearchForm from './components/SearchForm/SearchForm'
 import styles from './App.module.css'
-import NavBar from './NavBar/NavBar.js'
-import NewCustomList from './NewCustomList/NewCustomList'
-import {BrowserRouter, Routes, Route, Link} from 'react-router-dom'
-
+import NavBar from './components/NavBar/NavBar.js'
+import NewCustomList from './components/NewCustomList/NewCustomList'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import {
+    FirstfetchData,
+    FetchTodoItems,
+    PostNewLIst,
+    RemoveTodoItems,
+    RemoveListItem,
+} from './util/fetch'
 
 function App() {
     const [todoList, setTodoList] = useState([])
@@ -17,113 +23,67 @@ function App() {
     const [newListTitle, setNewListTitle] = useState('')
 
     const [searchTerm, setSearchTerm] = useState('')
-    const [activeListIndex, setActiveListIndex] = useState(null); 
+    const [activeListIndex, setActiveListIndex] = useState(null)
     const [animate, setAnimate] = useState(false)
-    const [Descriptions, setDescriptions] = useState(Array(todoList.length).fill(''))
+    const [Descriptions, setDescriptions] = useState(
+        Array(todoList.length).fill('')
+    )
 
-
-    const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}`
-    const listUrl = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME_LIST}`
-
-    const fetchData = async () => {
-        const options = {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_KEY}`,
-            },
-        }
-
-        try {
-            const todoResponse = await fetch(url, options)
-            const listResponse = await fetch(listUrl, options)
-
-            if (!todoResponse.ok) {
-                throw new Error(`Error has occured ${todoResponse.status}`)
-            }
-
-            if (!listResponse.ok) {
-                throw new Error(`Error has occured ${listResponse.status}`)
-            }
-
-
-            const todoData = await todoResponse.json()
-            const listData = await listResponse.json()
-            console.log('todoData', todoData)
-            console.log('lists', listData)
-            const todos = todoData.records.map((todo) => {
-                const newTodo = {
-                    id: todo.id,
-                    title: todo.fields.Title,
-                    listId: todo.fields.ListId
-                }
-
-                return newTodo
-            })
-           
-            const lists = listData.records.map((list) => {
-
-                return {
-                    
-                    id: list.id,
-                    title: list.fields.ListName,
-                    Descriptions: list.fields.Descriptions,
-                    todos: todos.filter((todo) => todo.listId === list.id),
-                }
-            })
-           console.log('listsss', lists)
-            setTodoList([...lists, ...todoList]);
-            setDescriptions(Array(todoList.length).fill(''))
-            setIsLoading(false)
-        } catch (err) {
-            console.error(err.message)
-        }
-    }
     useEffect(() => {
-        fetchData()
+        async function FirstfetchDataAndSet() {
+            try {
+                const { todoData, listData } = await FirstfetchData()
+
+                if (!todoData || !listData) {
+                    // Handle the case where either todoData or listData is undefined
+                    throw new Error('Data is not available')
+                }
+
+                const todos = todoData.records.map((todo) => {
+                    const newTodo = {
+                        id: todo.id,
+                        title: todo.fields.Title,
+                        listId: todo.fields.ListId,
+                    }
+
+                    return newTodo
+                })
+
+                const lists = listData.records.map((list) => {
+                    return {
+                        id: list.id,
+                        title: list.fields.ListName,
+                        Descriptions: list.fields.Descriptions,
+                        todos: todos.filter((todo) => todo.listId === list.id),
+                    }
+                })
+
+                setTodoList([...lists, ...todoList])
+                setDescriptions(Array(todoList.length).fill(''))
+                setIsLoading(false)
+            } catch (err) {
+                throw new Error(err.message)
+            }
+        }
+
+        FirstfetchDataAndSet()
     }, [])
 
-    //function to add new item to todo list based on its category
     const addTodo = async (newTodo) => {
-        const completedDate = new Date() // Replace with the actual completed date
-        const completedDateISO = completedDate.toISOString()
-       const listVisible =  todoList[isListVisible]
-
-        //record to post the data
-        const recordData = {
-            records: [
-                {
-                    fields: {
-                        Title: newTodo.title,
-                        completedAt: completedDateISO,    
-                        ListId: listVisible.id
-                        
-                    },
-                },
-            ],
-        }
-
-        //header
-        const headers = {
-            Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_KEY}`,
-            'Content-Type': 'application/json',
-        }
         try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(recordData),
-            })
-
-            if (!response.ok) {
-                throw new Error(`Error: ${response.status}`)
-            }
-            const newRecord = await response.json()
+            const completedDate = new Date()
+            const completedDateISO = completedDate.toISOString()
+            const newRecord = await FetchTodoItems(
+                newTodo,
+                isListVisible,
+                todoList
+            )
             setTodoList((prevtodoLost) => {
                 const updatedLists = [...prevtodoLost]
                 updatedLists[isListVisible].todos.push({
                     title: newTodo.title,
                     completedAt: completedDateISO,
-                    id: newRecord.records[0].id
+                    id: newRecord.records[0].id,
                 })
                 return updatedLists
             })
@@ -137,18 +97,8 @@ function App() {
     }
 
     const removeTodo = async (id) => {
-        const options = {
-            method: 'DELETE',
-            headers: {
-                Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_KEY}`,
-            },
-        }
-
         try {
-            const response = await fetch(`${url}/${id}`, options)
-            if (!response.ok) {
-                throw new Error(`Error occured: ${response.status}`)
-            }
+            await RemoveTodoItems(id)
             //important : Keep in mind that Airtable doesn't return a response body for successful DELETE requests, so there's no need to use response.json() to parse the response data in this case.
             setTodoList((prevTodoList) => {
                 const updatedLists = prevTodoList.map((list) => {
@@ -181,39 +131,13 @@ function App() {
     }
 
     const addNewList = async (title) => {
-        const listRecord = {
-            records: [
-                {
-                    fields: {
-                        ListName: title,
-                        Descriptions:''
-                    },
-                },
-            ],
-        }
-
-        const headers = {
-            Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_KEY}`,
-            'Content-Type': 'application/json',
-        }
-
         try {
-            const response = await fetch(listUrl, {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(listRecord),
-            })
-
-            if (!response.ok) {
-                throw new Error(` Error Occurred: ${response.status}`)
-            }
-
-            const newListData = await response.json()
+            const newListData = await PostNewLIst(title)
             const listIds = newListData.records.map((record) => record.id)
             const newLists = listIds.map((id) => ({
                 title,
                 todos: [],
-                id : id,
+                id: id,
             }))
             setTodoList([...todoList, ...newLists])
             setNewListTitle('')
@@ -227,105 +151,182 @@ function App() {
         setIsFormVisible(false)
     }
 
-    return (
-        
+    const removeList = async (id) => {
+        try {
+            await RemoveListItem(id)
 
+            // Updated the todoList state by filtering out the deleted list
+            setTodoList((prevTodoList) =>
+                prevTodoList.filter((todolist) => todolist.id !== id)
+            )
+        } catch (err) {
+            throw new Error(err.message)
+        }
+    }
+    return (
         <BrowserRouter>
-         <NavBar />
-        <Routes>
-            <Route path='/'    element={
-                <>
-               
-            <div className={styles['container']}>
-               
-                <div className={styles['background-element']}>
-                <div  className={styles['first-child']}>
-                <AddTodoForm onAddtodo={addTodo} />
-                </div>
-                <div className={styles['second-child']}>
-                <div className={styles['menu-elements']}>
-                    <SearchForm onSearch={searchTodo} />
-                    {todoList.map((list, index) => (
-                        <button
-                            key={index}
-                            onClick={() => {   console.log('Clicked button with index:', index);
-                            console.log('List ID:', list.id);
-                            const listIndex = todoList.findIndex((item) => item.id === list.id);
-                            console.log('Computed list index:', listIndex);
-                             setIsListVisible(listIndex); setActiveListIndex(index); setAnimate(true)}}
-                            className={
-                                index === isListVisible
-                                    ? styles['active-list']
-                                    : ''
-                            }
-                        >
-                            {list.title}
-                        </button>
-                    ))}
-                    <button
-                        className={styles['add-list']}
-                        onClick={() => setIsFormVisible(true) }
-                    >
-                        AddList
-                    </button>
-                </div>
-                <div
-                    className={styles[`model-container`]}
-                    style={{ display: isFormVisible ? 'flex' : 'none' }}
-                >
-                    {isFormVisible && (
-                        <NewCustomList
-                            className={styles[`model-card`]}
-                            onSubmit={(title) => {
-                                addNewList(title)
-                                setIsFormVisible(false)
-                            }}
-                            title={newListTitle}
-                            setTitle={setNewListTitle}
-                            onClose={closeAddModel}
-                        />
-                    )}
-                </div>
-                
-                <div>
-                  
-                    
-                  
-                        <TodoList
-                            className={styles.TodoList}
-                            todoList={
-                                isListVisible >= 0  && todoList.length > 0
-                                    ? todoList[isListVisible].todos
-                                    : []
-                            }
-                            
-                            onRemoveTodo={removeTodo}
-                            onToggleFavorite={toggleFavorite}
-                            searchTerm={searchTerm}
-                            isLoading={isLoading}
-                            activeListIndex={activeListIndex}
-                            animate={animate}
-                            setAnimate={setAnimate}
-                            isListVisible={isListVisible}
-                            Descriptions={Descriptions}
-                            setDescriptions={setDescriptions}  
-                            listId={
-                                isListVisible >= 0  && todoList.length > 0 ?
-                                todoList[isListVisible].id : undefined}
-                        />
-                 
-                    <Link to="/new" className={styles['break']}>let's take a break</Link>
-                </div>
-                </div>
-                </div>
-            </div>
-            <footer style={{ height: '20%', backgroundColor:'red'}}></footer>
-            </>
-            }/>
-            <Route  path='/new' element={<h1 style={{color: 'red'}}> Hi...</h1>}/>
-        </Routes>
-            </BrowserRouter>
-    
+            <NavBar />
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        <>
+                            <div className={styles['container']}>
+                                <div className={styles['background-element']}>
+                                    <div className={styles['first-child']}>
+                                        <SearchForm onSearch={searchTodo} />
+                                    </div>
+                                    <div className={styles['second-child']}>
+                                        <div
+                                            className={styles['menu-elements']}
+                                        >
+                                            {todoList.map((list, index) => (
+                                                <div
+                                                    key={list.id}
+                                                    className={
+                                                        styles['list-item']
+                                                    }
+                                                >
+                                                    <button
+                                                        className={
+                                                            styles[
+                                                                'remove-list-button'
+                                                            ]
+                                                        }
+                                                        onClick={() =>
+                                                            removeList(list.id)
+                                                        }
+                                                    >
+                                                        X
+                                                    </button>
+                                                    <button
+                                                        key={index}
+                                                        onClick={() => {
+                                                            const listIndex =
+                                                                todoList.findIndex(
+                                                                    (item) =>
+                                                                        item.id ===
+                                                                        list.id
+                                                                )
+                                                            setIsListVisible(
+                                                                listIndex
+                                                            )
+                                                            setActiveListIndex(
+                                                                index
+                                                            )
+                                                            setAnimate(true)
+                                                        }}
+                                                        className={
+                                                            index ===
+                                                            isListVisible
+                                                                ? styles[
+                                                                      'active-list'
+                                                                  ]
+                                                                : ''
+                                                        }
+                                                    >
+                                                        {list.title}
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            <button
+                                                className={styles['add-list']}
+                                                onClick={() =>
+                                                    setIsFormVisible(true)
+                                                }
+                                            >
+                                                AddList
+                                            </button>
+                                        </div>
+                                        <div
+                                            className={
+                                                styles[`model-container`]
+                                            }
+                                            style={{
+                                                display: isFormVisible
+                                                    ? 'flex'
+                                                    : 'none',
+                                            }}
+                                        >
+                                            {isFormVisible && (
+                                                <NewCustomList
+                                                    className={
+                                                        styles[`model-card`]
+                                                    }
+                                                    onSubmit={(title) => {
+                                                        addNewList(title)
+                                                        setIsFormVisible(false)
+                                                    }}
+                                                    title={newListTitle}
+                                                    setTitle={setNewListTitle}
+                                                    onClose={closeAddModel}
+                                                />
+                                            )}
+                                        </div>
+
+                                        <div>
+                                            <AddTodoForm onAddtodo={addTodo} />
+                                            <TodoList
+                                                className={styles.TodoList}
+                                                todoList={
+                                                    isListVisible >= 0 &&
+                                                    todoList.length > 0
+                                                        ? todoList[
+                                                              isListVisible
+                                                          ].todos
+                                                        : []
+                                                }
+                                                onRemoveTodo={removeTodo}
+                                                onToggleFavorite={
+                                                    toggleFavorite
+                                                }
+                                                searchTerm={searchTerm}
+                                                isLoading={isLoading}
+                                                activeListIndex={
+                                                    activeListIndex
+                                                }
+                                                animate={animate}
+                                                setAnimate={setAnimate}
+                                                isListVisible={isListVisible}
+                                                Descriptions={Descriptions}
+                                                setDescriptions={
+                                                    setDescriptions
+                                                }
+                                                listId={
+                                                    isListVisible >= 0 &&
+                                                    todoList.length > 0
+                                                        ? todoList[
+                                                              isListVisible
+                                                          ].id
+                                                        : undefined
+                                                }
+                                            />
+
+                                            <Link
+                                                to="/new"
+                                                className={styles['break']}
+                                            >
+                                                let's take a break
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <footer
+                                style={{
+                                    height: '20%',
+                                    backgroundColor: 'red',
+                                }}
+                            ></footer>
+                        </>
+                    }
+                />
+                <Route
+                    path="/new"
+                    element={<h1 style={{ color: 'red' }}> Hi...</h1>}
+                />
+            </Routes>
+        </BrowserRouter>
     )
 }
 
