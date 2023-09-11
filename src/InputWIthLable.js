@@ -6,7 +6,7 @@ const InputWithLable = ({ todoTitle, handelTitleChange, children }) => {
 
     useEffect(() => {
         inputRef.current.focus()
-    })
+    }, [])
 
     return (
         <>
