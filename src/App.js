@@ -7,7 +7,9 @@ import NavBar from './NavBar.js'
 import NewCustomList from './NewCustomList'
 
 function App() {
+
     const [todoList, setTodoList] = useState([])
+
     const [isLoading, setIsLoading] = useState(true)
     const [isListVisible, setIsListVisible] = useState(0)
 
@@ -77,6 +79,8 @@ function App() {
     }, [])
 
     //function to add new item to todo list based on its category
+
+
     const addTodo = async (newTodo) => {
         const completedDate = new Date() // Replace with the actual completed date
         const completedDateISO = completedDate.toISOString()
@@ -129,6 +133,8 @@ function App() {
     const searchTodo = (searchTerm) => {
         setSearchTerm(searchTerm)
     }
+
+
 
     const removeTodo = async (id) => {
         const options = {

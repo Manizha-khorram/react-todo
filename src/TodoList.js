@@ -22,6 +22,7 @@ const TodoList = ({
 
     const [prioritize, setPrioritize] = useState(false)
 
+
     const sortedTodoList = filteredTodoList.sort((a, b) => {
         if (prioritize) {
             //This ensures that the favorite items come first in the sorted list.
@@ -30,6 +31,7 @@ const TodoList = ({
             return a.id - b.id
         }
     })
+
     const handelStarsOrder = (event) => {
         setPrioritize(!prioritize)
     }
@@ -49,6 +51,7 @@ const TodoList = ({
                         />
                     ))}
                 </ul>
+
                 <button onClick={handelStarsOrder}> Prioritize</button>
 
             </div>
