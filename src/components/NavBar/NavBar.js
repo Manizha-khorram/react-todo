@@ -3,6 +3,8 @@ import styles from './NavBar.module.css'
 import QuoteFetcher from '../../FetchRandomQuotes'
 import Modal from 'react-modal'
 
+Modal.setAppElement('#root')
+
 const NavBar = () => {
     const [modalIsOpen, setModalIsOpen] = useState(false)
 
@@ -25,9 +27,9 @@ const NavBar = () => {
                     <ul>
                         <div></div>
                         <div className={styles['links']}>
-                            <li>About</li>
-                            <li>Contact</li>
-                            <li>sign out</li>
+                            <li><a href="/About" className={styles['links-content']}>About</a></li>
+                            <li><a href="/Contact" className={styles['links-content']}>Contact</a></li>
+                            <li><a href="/sign out" className={styles['links-content']}>sign out</a></li>
                         </div>
                     </ul>
                     <video

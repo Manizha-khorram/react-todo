@@ -1,12 +1,12 @@
 body {
     margin: 0;
     padding: 0;
-    /* background-image: url('/images/395789-PCL0CH-412.jpg'); */
     font-family: cursive;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
     background-color: #aee6e285;
+    position: relative;
 }
 body button {
     border: 2px #163e41;
@@ -124,7 +124,70 @@ body button:hover {
     cursor: pointer;
     font-size: 16px;
 }
+.pagination-container {
+    display: flex;
+    align-items: center;
+    margin: 10px 11px 30px 145px;
+}
+
+.break-container {
+    width: 100%;
+    margin: 30px 11px 20px 10px;
+    position: absolute;
+    bottom: 182px;
+    left: 110px;
+    z-index: 1; 
+}
 
 .break {
-    color: rgb(192, 77, 77);
+    color: #d1cfbd;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    z-index: 2; /* Place the link above the video */
+}
+
+.videoWrapper {
+    position: absolute; 
+    width: 89%;
+    height: 75.2vh; 
+    display: flex;
+    flex-direction: row;
+    background-color: #296e68;
+}
+
+.videoWrapper video {
+    position: absolute;
+    top: 1px;
+    left: 600px;
+    width: 59%;
+    height: 75vh;
+    object-fit: cover; /* Maintain the aspect ratio */
+    object-fit: cover; /* Maintain aspect ratio and cover the entire container */
+
+}
+
+.footer-container{
+    height: 13vh;
+    background-color: #aee6e285;
+    margin-top: 27em;  
+}
+
+.footer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer p {
+    color: #55828b;
+    padding-right: 9px;
+}
+
+.footer a img {
+    width: 35px;
+    margin: 3px;
+    border: 2px solid transparent;
+    background-color: white;
+    border-radius: 50%;
 }

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import TodoListItem from '../TodoListItem/TodoListItem'
 import styles from './TodoList.module.css'
 import { motion } from 'framer-motion/dist/framer-motion'
-import PropTypes, { arrayOf } from 'prop-types'
+import PropTypes from 'prop-types'
+import SortingDropdown from '../SortingDropdown/SortTodos'
 
 const listUrl = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME_LIST}`
 
@@ -19,9 +20,9 @@ const TodoList = ({
     Descriptions,
     setDescriptions,
     listId,
+    currentPage,
+    itemsPerPage,
 }) => {
- 
-
     if (isLoading) {
         return <p>....isLoading</p>
     }
@@ -30,8 +31,43 @@ const TodoList = ({
         todo.title.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
+    const [sortingOption, setSortingOption] = useState('')
+
     const [prioritize, setPrioritize] = useState(false)
-    const [shouldResetAnimation, setShouldResetAnimation] = useState(false)
+
+    useEffect(() => {
+        setSortingOption(sortingOption)
+    }, [todoList, sortingOption])
+    //sorting
+    const handleSortChange = (option) => {
+        setSortingOption(option)
+    }
+
+    const sortedTodoList = filteredTodoList.sort((a, b) => {
+        const firstLetterA = a.title.charAt(0).toLowerCase() // Get the first letter of title A
+        const firstLetterB = b.title.charAt(0).toLowerCase() // Get the first letter of title B
+
+        if (sortingOption === 'asc') {
+            return firstLetterA.localeCompare(firstLetterB) //Note2
+        } else if (sortingOption === 'desc') {
+            return firstLetterB.localeCompare(firstLetterA)
+        } else if (sortingOption === 'completedAt') {
+            const timeA = new Date(a.completedAt).getTime()
+            const timeB = new Date(b.completedAt).getTime()
+            return timeA - timeB
+        } else {
+            // Default sorting by ID
+            return b.id - a.id
+        }
+    })
+
+    if (prioritize) {
+        sortedTodoList.sort((a, b) => {
+            if (a.isFavorite && !b.isFavorite) return -1
+            if (!a.isFavorite && b.isFavorite) return 1
+            return 0
+        })
+    }
 
     const fetchDescriptionChange = async () => {
         try {
@@ -44,22 +80,17 @@ const TodoList = ({
             })
 
             const data = await response.json()
-            console.log('datata', data)
             if (!response.ok) {
                 throw new Error('Erorr', `${response.status}`)
             }
-            const Descriptions = data.fields.Descriptions || []
+            const Descriptions = data.fields.Descriptions || ''
             setDescriptions(Descriptions)
         } catch (err) {}
     }
 
     const handleDescriptionChange = async (event) => {
         if (event.key === 'Enter') {
-            const newListIndex = isListVisible
-            const newDescriptions = [...Descriptions]
-            newDescriptions[newListIndex] = event.target.value
-            setDescriptions(newDescriptions)
-            event.target.value = ''
+            setDescriptions(event.target.value)
             try {
                 const response = await fetch(`${listUrl}/${listId}`, {
                     method: 'PATCH',
@@ -69,12 +100,11 @@ const TodoList = ({
                     },
                     body: JSON.stringify({
                         fields: {
-                            Descriptions: Descriptions[isListVisible],
+                            Descriptions: event.target.value,
                         },
                     }),
                 })
 
-                console.log('data', response.status)
                 if (!response.ok) {
                     console.log('error', await response.json())
                     throw new Error(`Error: ${response.status}`)
@@ -89,14 +119,6 @@ const TodoList = ({
         if (!Descriptions[isListVisible]) return // No need to update if description is empty
     }, [Descriptions[isListVisible]])
 
-    const sortedTodoList = filteredTodoList.sort((a, b) => {
-        if (prioritize) {
-            //This ensures that the favorite items come first in the sorted list.
-            return b.isFavorite ? 1 : -1
-        } else {
-            return a.id - b.id
-        }
-    })
     const handelStarsOrder = (event) => {
         setPrioritize(!prioritize)
     }
@@ -116,40 +138,38 @@ const TodoList = ({
     }
 
     useEffect(() => {
-      
         if (activeListIndex >= 0) {
             setAnimate(true)
-            setDescriptions((prevDescriptions) => {
-                const newDescriptions = [...prevDescriptions]
-                newDescriptions[isListVisible] = Descriptions[isListVisible]
-                return newDescriptions
-            })
-
             fetchDescriptionChange()
-            // Set shouldResetAnimation to true
-            setShouldResetAnimation(true)
-
-            // After a short delay, set shouldResetAnimation back to false
-            const timeoutId = setTimeout(() => {
-                setShouldResetAnimation(false)
-            }, 500) // Adjust the delay as needed
-
-            return () => {
-                clearTimeout(timeoutId)
-            }
         }
     }, [activeListIndex, isListVisible])
 
     const todoListsClassName = `${styles['todo-lists']} ${
-        activeListIndex >= 0 ? styles['visible'] : '' // Apply the animation style only if there's an active list
+        activeListIndex >= 0 ? styles['visible'] : '' // Applied the animation style only if there's an active list
     }`
 
-    // Set animate to false after a short delay to reset the animation
+    //Pagination
 
-    const activeList = todoList
+    let startIndex = (currentPage - 1) * itemsPerPage
+    let endIndex = startIndex + itemsPerPage
+
+    if (startIndex < 0) {
+        startIndex = 0
+    }
+    if (endIndex > sortedTodoList.length) {
+        endIndex = sortedTodoList.length
+    }
+
+    // Slice the sortedTodoList to display only the items for the current page
+    const currentItems = sortedTodoList.slice(startIndex, endIndex)
+
+    // ...
 
     return (
         <>
+            <div>
+                <SortingDropdown onChange={handleSortChange} />
+            </div>
             <div className={styles['todo-lists-container']}>
                 <motion.ul
                     className={todoListsClassName}
@@ -157,7 +177,7 @@ const TodoList = ({
                     animate={animate ? 'visible' : 'hidden'}
                     variants={todoListsVariants}
                 >
-                    {sortedTodoList.map((todo) => (
+                    {currentItems.map((todo) => (
                         <TodoListItem
                             key={todo.id}
                             todo={todo}
@@ -167,7 +187,7 @@ const TodoList = ({
                         />
                     ))}
                 </motion.ul>
-                <div>
+                <div className={styles['prioritize-container']}>
                     <button onClick={handelStarsOrder}> Prioritize</button>
                 </div>
                 <div className={styles['description-container']}>
@@ -177,20 +197,11 @@ const TodoList = ({
                         placeholder="Add Descriptions"
                         id="Descriptions"
                         onChange={(event) => {
-                            const newDescriptions = [...Descriptions]
-                            newDescriptions[isListVisible] = event.target.value
-                            setDescriptions(newDescriptions)
+                            setDescriptions(event.target.value)
                         }}
                         onKeyDown={handleDescriptionChange}
                         className={styles['description-input']}
-                    />
-                    {/* {isListVisible >= 0 && activeList && (
-      <div className={styles['list-description-container']}>
-        <p className={styles['list-description']} style={{ color: 'white' }}>
-          {Descriptions}
-        </p>
-      </div>
-    )} */}
+                    />{' '}
                 </div>
             </div>
         </>
@@ -198,22 +209,25 @@ const TodoList = ({
 }
 
 TodoList.propTypes = {
-    todoList: PropTypes.arrayOf(      
+    todoList: PropTypes.arrayOf(
         PropTypes.shape({
-          title: PropTypes.string.isRequired,
-      })),
+            title: PropTypes.string.isRequired,
+        })
+    ),
     onRemoveTodo: PropTypes.func.isRequired,
     onToggleFavorite: PropTypes.func.isRequired,
     searchTerm: PropTypes.string.isRequired,
     isLoading: PropTypes.bool.isRequired,
-    activeListIndex: PropTypes.number.isRequired,
+    activeListIndex: PropTypes.number,
     setAnimate: PropTypes.func.isRequired,
     animate: PropTypes.bool.isRequired,
     isListVisible: PropTypes.number.isRequired,
-    Descriptions: PropTypes.arrayOf(PropTypes.string).isRequired,
-    setDescriptions:PropTypes.func.isRequired,
-    listId: PropTypes.string.isRequired,
-  }
-
+    Descriptions: PropTypes.arrayOf(PropTypes.string),
+    setDescriptions: PropTypes.func.isRequired,
+    listId: PropTypes.string,
+}
 
 export default TodoList
+
+//Note1 : We are converting the completedAt property of object a (which is assumed to contain a date or timestamp) into a JavaScript Date object using new Date(a.completedAt). Then, we use the .getTime() method on the Date object to obtain the timestamp in milliseconds. This timestamp represents the time when the task was completed.
+//Note2 : The localeCompare function is commonly used for string comparison and sorting in JavaScript. It's a method available on JavaScript string objects, and it's used to determine whether one string comes before, after, or is the same as another string in a sorted order.

@@ -6,6 +6,8 @@ import styles from './App.module.css'
 import NavBar from './components/NavBar/NavBar.js'
 import NewCustomList from './components/NewCustomList/NewCustomList'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import Pagination from './components/Pagination/Pagination'
+
 import {
     FirstfetchData,
     FetchTodoItems,
@@ -28,6 +30,14 @@ function App() {
     const [Descriptions, setDescriptions] = useState(
         Array(todoList.length).fill('')
     )
+
+    const itemsPerPage = 10
+    const [currentPage, setCurrentPage] = useState(1)
+
+    // Handle page change
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber)
+    }
 
     useEffect(() => {
         async function FirstfetchDataAndSet() {
@@ -53,7 +63,7 @@ function App() {
                     return {
                         id: list.id,
                         title: list.fields.ListName,
-                        Descriptions: list.fields.Descriptions,
+                        Descriptions: list.fields.Descriptions || [],
                         todos: todos.filter((todo) => todo.listId === list.id),
                     }
                 })
@@ -85,6 +95,12 @@ function App() {
                     completedAt: completedDateISO,
                     id: newRecord.records[0].id,
                 })
+
+                const newPageNumber = Math.ceil(
+                    updatedLists[isListVisible].todos.length / itemsPerPage
+                )
+                setCurrentPage(newPageNumber)
+
                 return updatedLists
             })
         } catch (err) {
@@ -107,6 +123,11 @@ function App() {
                         todos: list.todos.filter((todo) => todo.id !== id),
                     }
                 })
+                const newPageNumber = Math.ceil(
+                    updatedLists[isListVisible].todos.length / itemsPerPage
+                )
+                setCurrentPage(newPageNumber)
+
                 return updatedLists
             })
         } catch (err) {
@@ -163,6 +184,7 @@ function App() {
             throw new Error(err.message)
         }
     }
+
     return (
         <BrowserRouter>
             <NavBar />
@@ -265,7 +287,17 @@ function App() {
                                         </div>
 
                                         <div>
-                                            <AddTodoForm onAddtodo={addTodo} />
+                                            <AddTodoForm
+                                                onAddtodo={addTodo}
+                                                todoList={
+                                                    isListVisible >= 0 &&
+                                                    todoList.length > 0
+                                                        ? todoList[
+                                                              isListVisible
+                                                          ].todos
+                                                        : []
+                                                }
+                                            />
                                             <TodoList
                                                 className={styles.TodoList}
                                                 todoList={
@@ -300,30 +332,68 @@ function App() {
                                                           ].id
                                                         : undefined
                                                 }
+                                                currentPage={currentPage}
+                                                itemsPerPage={itemsPerPage}
                                             />
-
-                                            <Link
-                                                to="/new"
-                                                className={styles['break']}
+                                            <div
+                                                className={
+                                                    styles[
+                                                        'pagination-container'
+                                                    ]
+                                                }
                                             >
-                                                let's take a break
-                                            </Link>
+                                                <Pagination
+                                                    currentPage={currentPage}
+                                                    totalPages={Math.ceil(
+                                                        todoList[
+                                                            isListVisible
+                                                        ] &&
+                                                            todoList[
+                                                                isListVisible
+                                                            ].todos.length /
+                                                                itemsPerPage
+                                                    )}
+                                                    onPageChange={
+                                                        handlePageChange
+                                                    }
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <footer
-                                style={{
-                                    height: '20%',
-                                    backgroundColor: 'red',
-                                }}
-                            ></footer>
+                            <div className={styles.videoWrapper}>
+                                <video
+                                    autoPlay
+                                    loop
+                                    muted
+                                    playsInline
+                                    className={styles.video}
+                                >
+                                    <source
+                                        src="/images/drink_-_38048 (1080p).mp4"
+                                        type="video/mp4"
+                                    />
+                                    Your browser doesn't support video!
+                                </video>
+                                <div className={styles['break-container']}>
+                                    <a
+                                        href="https://www.lumosity.com/train/turbo/odp/1/play"
+                                        className={styles['break']}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        Lets Take A Break And Play!
+                                    </a>
+                                </div>
+                            </div>
+                            <div className={styles['footer-container']}>
+                                <footer className={styles.footer}>
+                                <p>© 2023 Todo Manangement APP BY </p>  <a href="https://github.com/Manizha-khorram" target="_blank" rel="noreferrer" title='Manizha'><img src="https://ca.slack-edge.com/T07EHJ738-U03G77AKPFY-1878db5f4c82-512" alt="Manizha"/></a><p>Manizha Khorram</p>
+                                </footer>
+                            </div>
                         </>
                     }
-                />
-                <Route
-                    path="/new"
-                    element={<h1 style={{ color: 'red' }}> Hi...</h1>}
                 />
             </Routes>
         </BrowserRouter>

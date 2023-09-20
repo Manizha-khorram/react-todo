@@ -30,12 +30,12 @@ const AddTodoForm = ({ onAddtodo }) => {
                 className={styles['todoIput']}
             ></InputWithLable>
 
-            <button type="submit">Add</button>
+            {/* <button type="submit">Add</button> */}
         </form>
     )
 }
 
 AddTodoForm.propTypes = {
     onAddtodo: PropTypes.func.isRequired,
-  }
+}
 export default AddTodoForm
