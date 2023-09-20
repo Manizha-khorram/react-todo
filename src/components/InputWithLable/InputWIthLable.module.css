@@ -1,0 +1,39 @@
+/* .todoInput {
+    background-color: #0d1d23;
+    width: 38em;
+    margin-left: 10px;
+    margin-top: 58px;
+    border: none;
+    border-bottom: 2px solid #6091b2;
+    color: #14283a;
+} */
+
+/* InputWithLabel.module.css */
+
+.todoInputWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.label {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.todoInput {
+    width: 30em;
+    height: 36px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+}
+
+.todoInput:focus {
+    outline: none;
+    border-color: #6091b2;
+    box-shadow: 0 0 5px rgba(96, 145, 178, 0.7);
+}
