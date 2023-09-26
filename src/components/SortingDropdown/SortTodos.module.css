@@ -2,3 +2,10 @@
     width: 18%;
     margin: -40px 10px 10px 430px;
 }
+
+@media screen and (max-width: 767px) {
+    .Sort-todo-lists {
+        width: 28%;
+        margin: -40px 10px 10px 180px;
+    }
+}

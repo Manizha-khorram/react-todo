@@ -32,7 +32,7 @@
 
 .list-description {
     /* padding: 30px; */
-    width: 428px;
+    width: 100%;
     overflow-wrap: break-word;
 }
 
@@ -48,7 +48,7 @@
     border: none;
     border-radius: 5px;
     padding: 5px;
-    width: 428px;
+    width: 90%;
     font-size: 14px;
     line-height: 5;
     color: #333;
@@ -63,4 +63,10 @@
     padding: 10px;
     margin-top: 10px;
     width: 100%;
+}
+/* Mobile styles for screens with a width of 767px or less */
+@media screen and (max-width: 767px) {
+    .todo-lists-container {
+        width: 90%;
+    }
 }

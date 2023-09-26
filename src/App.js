@@ -389,7 +389,19 @@ function App() {
                             </div>
                             <div className={styles['footer-container']}>
                                 <footer className={styles.footer}>
-                                <p>© 2023 Todo Manangement APP BY </p>  <a href="https://github.com/Manizha-khorram" target="_blank" rel="noreferrer" title='Manizha'><img src="https://ca.slack-edge.com/T07EHJ738-U03G77AKPFY-1878db5f4c82-512" alt="Manizha"/></a><p>Manizha Khorram</p>
+                                    <p>© 2023 Todo Manangement APP BY </p>{' '}
+                                    <a
+                                        href="https://github.com/Manizha-khorram"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        title="Manizha"
+                                    >
+                                        <img
+                                            src="https://ca.slack-edge.com/T07EHJ738-U03G77AKPFY-1878db5f4c82-512"
+                                            alt="Manizha"
+                                        />
+                                    </a>
+                                    <p>Manizha Khorram</p>
                                 </footer>
                             </div>
                         </>
