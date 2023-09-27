@@ -10,7 +10,10 @@ export const FirstfetchData = async () => {
     }
 
     try {
-        const todoResponse = await fetch(url, options)
+        const todoResponse = await fetch(
+            `${url}/?sort[0][field]=Title&sort[0][direction]=asc`,
+            options
+        )
         const listResponse = await fetch(listUrl, options)
 
         if (!todoResponse.ok) {

@@ -32,9 +32,8 @@ const TodoListItem = ({ todo, onRemoveTodo, onToggleFavorite }) => {
 }
 
 TodoListItem.propTypes = {
-
-    todo:PropTypes.string.isRequired, 
-    onRemoveTodo:PropTypes.func.isRequired, 
-    onToggleFavorite:PropTypes.func.isRequired,
+    todo: PropTypes.string.isRequired,
+    onRemoveTodo: PropTypes.func.isRequired,
+    onToggleFavorite: PropTypes.func.isRequired,
 }
 export default TodoListItem

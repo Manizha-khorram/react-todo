@@ -2,7 +2,7 @@
     display: flex;
     justify-content: space-between;
     flex-direction: row;
-    margin: 5px -113px;
+    margin: 5px -73px;
 }
 
 /* Apply the animation when the item becomes visible */
@@ -27,7 +27,9 @@
     border-radius: 4px;
     cursor: pointer;
     font-size: 10px;
-    transition: background-color 0.3s, transform 0.3s;
+    transition:
+        background-color 0.3s,
+        transform 0.3s;
 }
 .remove-button:hover {
     background-color: #43a047;
@@ -45,4 +47,7 @@
 
 .star-icon:hover {
     transform: scale(1.2);
+}
+.filled-star {
+    color: gold;
 }
