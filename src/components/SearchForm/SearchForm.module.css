@@ -15,10 +15,9 @@
 }
 
 button {
-    background-color: #007bff; /* Add a background color */
-    color: #fff; /* Text color */
+    background-color: #007bff;
+    color: #fff;
     border: none;
-    padding: 5px 10px; /* Add padding to the button */
+    padding: 5px 10px;
     cursor: pointer;
-    /* Add any other styling for the button */
 }

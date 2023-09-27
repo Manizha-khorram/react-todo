@@ -5,12 +5,6 @@
     margin: 5px -73px;
 }
 
-/* Apply the animation when the item becomes visible */
-/* .todo-list-items li.visible {
-    opacity: 1;
-    transform: translateX(0);
-} */
-
 .todo-title {
     display: flex;
     flex-grow: 1;
