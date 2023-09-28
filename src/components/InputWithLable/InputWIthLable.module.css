@@ -1,0 +1,35 @@
+/* InputWithLabel.module.css */
+
+.todoInputWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.label {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.todoInput {
+    width: 70%;
+    height: 36px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+}
+
+.todoInput:focus {
+    outline: none;
+    border-color: #6091b2;
+    box-shadow: 0 0 5px rgba(96, 145, 178, 0.7);
+}
+
+@media screen and (max-width: 767px) {
+    .todoInput {
+        width: 40%;
+    }
+}

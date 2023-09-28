@@ -1,0 +1,23 @@
+.form-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.searchQuery {
+    width: 80%;
+    border: none;
+    border-bottom: 1px solid #2c2323;
+    padding: 5px;
+    font-size: 16px;
+    outline: none;
+    background-color: transparent;
+    margin: 10px;
+}
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
