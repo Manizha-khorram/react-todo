@@ -3,13 +3,12 @@ import styles from './InputWIthLable.module.css'
 import PropTypes from 'prop-types'
 
 const InputWithLable = ({ todoTitle, handelTitleChange, children }) => {
-    // const inputRef = useRef()
+    const inputRef = useRef()
 
-    // //sorting
 
-    // useEffect(() => {
-    //     inputRef.current.focus()
-    // }, [])
+    useEffect(() => {
+        inputRef.current.focus()
+    }, [])
 
     return (
         <>
@@ -20,7 +19,7 @@ const InputWithLable = ({ todoTitle, handelTitleChange, children }) => {
                 name="title"
                 value={todoTitle}
                 onChange={handelTitleChange}
-                // ref={inputRef}
+                ref={inputRef}
                 className={styles['todoInput']}
             />
         </>

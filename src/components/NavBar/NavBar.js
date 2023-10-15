@@ -45,6 +45,15 @@ const NavBar = () => {
                             isMenuOpen ? styles['open-menu'] : styles['links']
                         }
                     >
+                         <li>
+                            <a
+                                href="/"
+                                className={styles['links-content']}
+                                onClick={closeMenu}
+                            >
+                                Home
+                            </a>
+                        </li>
                         <li>
                             <a
                                 href="/About"

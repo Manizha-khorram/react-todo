@@ -23,7 +23,7 @@ function TodoContainer() {
     const [searchTerm, setSearchTerm] = useState('');
     const [activeListIndex, setActiveListIndex] = useState(null);
     const [animate, setAnimate] = useState(false);
-    const [Descriptions, setDescriptions] = useState(Array(todoList.length).fill(''));
+    const [Descriptions, setDescriptions] = useState([]);
     const itemsPerPage = 10;
     const [currentPage, setCurrentPage] = useState(1);
 

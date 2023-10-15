@@ -32,7 +32,7 @@ const TodoListItem = ({ todo, onRemoveTodo, onToggleFavorite }) => {
 }
 
 TodoListItem.propTypes = {
-    todo: PropTypes.string.isRequired,
+    todo: PropTypes.object.isRequired,
     onRemoveTodo: PropTypes.func.isRequired,
     onToggleFavorite: PropTypes.func.isRequired,
 }
